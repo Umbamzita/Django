@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Tag
 
 class ObjectDetailMixin:
@@ -7,6 +7,23 @@ class ObjectDetailMixin:
 
     def get(self, requests, slug):
         obj = get_object_or_404(self.model, slug__iexact = slug)
-        return render(requests, self.template, context = {self.model.__name__.lower() : obj})
+        return render(requests, self.template, 
+        context = {self.model.__name__.lower() : obj})
         
 
+class ObjectCreateMixin:
+    form_model = None
+    template = None
+
+
+    def get(self, requests):
+        form = self.form_model()
+        return render(requests, self.template, context = {'form' : form})
+    
+    def post(self, requests):
+        
+        bound_form = self.form_model(requests.POST)
+        if bound_form.is_valid():
+            new_obj = bound_form.save()
+            return redirect(new_obj)
+        return render(requests, self.template, context = {'form' : bound_form})
