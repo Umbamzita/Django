@@ -1,0 +1,18 @@
+{%extends 'blog/base_blog.html'%}
+
+{%block title%}
+    Delete post - '{{post.title|title}}'
+{%endblock%}
+
+
+{%block content%}
+<form action="{{ post.get_delete_url }}" method="POST">
+    {% csrf_token %}
+    <h2>Are you want to delete '{{post.title}}' tag?</h2>
+    <p>{{post.body}}</p>
+    <a href="{%url 'post_detail_url' post.slug %}">Cancel</a> 
+    <!-- or can use {{post.get_absolute_url}} -->
+    <button type="submit" class ='btn btn-danger'>Delete</button>
+</form>
+
+{%endblock%}
