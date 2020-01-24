@@ -8,10 +8,35 @@ from .utils import *
 from .forms import TagForm, PostForm
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 def posts_list(requests):
-    posts = Post.objects.all().order_by('-date_pub')
-    return render(requests, 'blog/index.html', context = {'posts' : posts})
+    posts = Post.objects.all()
+    paginator = Paginator(posts, 2)
+
+    page_number = requests.GET.get('page', 1)
+    page = paginator.get_page(page_number)
+
+    is_paginated = page.has_other_pages()
+    prev_url = ''
+    next_url = ''
+
+    if page.has_previous():
+        prev_url = f'?page={page.previous_page_number()}'
+    
+    if page.has_next():
+        next_url = f'?page={page.next_page_number()}'
+    
+
+    context = {
+        'page_object' : page,
+        'is_paginated' : is_paginated,
+        'prev_url' : prev_url,
+        'next_url' : next_url,
+    }
+
+
+    return render(requests, 'blog/index.html', context = context)
 
 
 class TagDetail(ObjectDetailMixin, View):

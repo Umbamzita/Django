@@ -24,6 +24,9 @@ class Post(models.Model):
     def get_delete_url(self):
         return reverse('post_delete_url', kwargs = {'slug' : self.slug }) 
 
+    class Meta:
+        ordering = ['-date_pub']
+
     
 
     def save(self, *args, **kargs):
@@ -51,3 +54,6 @@ class Tag(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+
+    class Meta:
+        ordering = ['title']
